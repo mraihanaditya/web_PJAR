@@ -39,8 +39,60 @@ SECRET_KEY=rahasia_bebas
 DATABASE_URL=mysql+pymysql://root:@localhost/web_socket
 MAIL_USERNAME=email_anda@gmail.com
 MAIL_PASSWORD=password_app_gmail_anda
-TCP_SERVER_IP=127.0.0.1
+TCP_SERVER_IP=sesuai_ip_server
 TCP_SERVER_PORT=5001
-UDP_SERVER_IP=127.0.0.1
+UDP_SERVER_IP=sesuai_ip_server
 UDP_SERVER_PORT=5002
+```
+
+---
+
+# 🖥️ Instalasi Socket Server (Ubuntu Server)
+
+Socket Server berfungsi sebagai server komunikasi menggunakan **TCP** untuk upload file dan **UDP** untuk video streaming. Server ini dijalankan secara terpisah dari aplikasi Flask.
+
+## Struktur Folder
+
+Buat folder dengan struktur berikut pada Ubuntu Server.
+
+```text
+socket_server/
+├── run.py
+├── uploaded_files/
+├── TCP/
+│   └── tcp_uploader.py
+└── UDP/
+    └── udp_streamer.py
+```
+
+## 1. Install Python
+
+Perbarui paket Ubuntu kemudian install Python.
+
+```bash
+sudo apt update
+sudo apt install python3 python3-pip -y
+```
+
+Pastikan Python telah terpasang.
+
+```bash
+python3 --version
+pip3 --version
+```
+
+---
+
+## 2. Pindahkan Source Code
+
+Salin folder **socket_server** dari komputer client ke Ubuntu Server.
+
+Contoh menggunakan **SCP** dari Windows (PowerShell): (sesuaikan dengan struktur folder)
+
+## 3. Menjalankan Server
+
+Jalankan kedua server (TCP dan UDP) secara bersamaan menggunakan:
+
+```bash
+python3 run.py
 ```
