@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Socket Web Platform</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- Tailwind CDN (utility helpers only, design system lives in style.css) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- ===== Background Atmosphere ===== -->
+<div class="bg-scene" aria-hidden="true">
+  <div class="blur-circle circle-1"></div>
+  <div class="blur-circle circle-2"></div>
+  <div class="blur-circle circle-3"></div>
+  <div class="grid-overlay"></div>
+</div>
+
+<!-- ===== Toast Container ===== -->
+<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Hidden store of Flask flash messages, read by app.js -->
+<div id="flashData" hidden>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}
+        <p data-flash>{{ msg }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<!-- ===== Header ===== -->
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-mark"><i class="fa-solid fa-diagram-project"></i></span>
+      <div class="brand-text">
+        <span class="brand-name">Socket Web Platform</span>
+        <span class="server-status"><span class="status-dot"></span>SERVER ONLINE</span>
+      </div>
+    </div>
+
+    {% if session.get('logged_in') %}
+    <div class="header-user">
+      <div class="user-chip">
+        <i class="fa-regular fa-user"></i>
+        <span>{{ session.get('email') }}</span>
+      </div>
+      <a href="/logout" class="btn btn-ghost ripple">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</header>
+
+<main>
+
+  {% if not session.get('logged_in') %}
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero-inner fade-in">
+      <div class="hero-icon">
+        <i class="fa-solid fa-tower-broadcast"></i>
+      </div>
+      <h1 class="hero-title">Socket Communication Dashboard</h1>
+      <p class="hero-subtitle">Secure TCP File Transfer &amp; Real-time UDP Video Streaming</p>
+      <div class="hero-badges">
+        <span class="hero-badge"><i class="fa-solid fa-network-wired"></i> TCP Socket</span>
+        <span class="hero-badge"><i class="fa-solid fa-video"></i> UDP Streaming</span>
+        <span class="hero-badge"><i class="fa-solid fa-shield-halved"></i> Secure Auth</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Auth Section ===== -->
+  <section class="auth-section">
+    <div class="auth-grid">
+
+      <!-- Login Card -->
+      <div class="glass-card auth-card fade-in-up">
+        <div class="auth-card-head">
+          <span class="auth-icon"><i class="fa-solid fa-right-to-bracket"></i></span>
+          <h2>Sign In</h2>
+          <p>Masuk untuk mengakses dashboard socket Anda</p>
+        </div>
+        <form action="/login" method="POST" class="auth-form" autocomplete="off">
+          <div class="field">
+            <label for="loginEmail">Email</label>
+            <div class="input-wrap">
+              <i class="fa-regular fa-envelope"></i>
+              <input id="loginEmail" type="email" name="email" placeholder="nama@email.com" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="loginPassword">Password</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock"></i>
+              <input id="loginPassword" type="password" name="password" placeholder="••••••••" required>
+              <button type="button" class="toggle-pass" data-target="loginPassword" aria-label="Tampilkan password">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="field-row">
+            <label class="checkbox">
+              <input type="checkbox" name="remember">
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="muted-link">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block ripple">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>Sign In</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Register Card -->
+      <div class="glass-card auth-card fade-in-up delay-1">
+        <div class="auth-card-head">
+          <span class="auth-icon accent"><i class="fa-solid fa-user-plus"></i></span>
+          <h2>Create Account</h2>
+          <p>Daftar dan verifikasi email Anda secara otomatis</p>
+        </div>
+        <form action="/register" method="POST" class="auth-form" autocomplete="off">
+          <div class="field">
+            <label for="registerEmail">Email</label>
+            <div class="input-wrap">
+              <i class="fa-regular fa-envelope"></i>
+              <input id="registerEmail" type="email" name="email" placeholder="nama@email.com" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="registerPassword">Password</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock"></i>
+              <input id="registerPassword" type="password" name="password" placeholder="••••••••" required>
+              <button type="button" class="toggle-pass" data-target="registerPassword" aria-label="Tampilkan password">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <p class="field-hint"><i class="fa-solid fa-circle-info"></i> Email verifikasi akan dikirim setelah registrasi.</p>
+          <button type="submit" class="btn btn-accent btn-block ripple">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Create Account</span>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  {% else %}
+  <!-- ===== Dashboard ===== -->
+  <section class="dashboard">
+
+    <div class="dashboard-intro fade-in">
+      <h1>Welcome back</h1>
+      <p>Pantau koneksi socket dan kelola transfer data secara real-time.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card glass-card fade-in-up">
+        <span class="stat-icon" style="--icon-color:#22C55E"><i class="fa-solid fa-network-wired"></i></span>
+        <div class="stat-body">
+          <span class="stat-label">TCP Status</span>
+          <span class="stat-value">Connected</span>
+        </div>
+      </div>
+      <div class="stat-card glass-card fade-in-up delay-1">
+        <span class="stat-icon" style="--icon-color:#38BDF8"><i class="fa-solid fa-satellite-dish"></i></span>
+        <div class="stat-body">
+          <span class="stat-label">UDP Stream</span>
+          <span class="stat-value">Active</span>
+        </div>
+      </div>
+      <div class="stat-card glass-card fade-in-up delay-2">
+        <span class="stat-icon" style="--icon-color:#7C3AED"><i class="fa-solid fa-shield-halved"></i></span>
+        <div class="stat-body">
+          <span class="stat-label">Authentication</span>
+          <span class="stat-value">Success</span>
+        </div>
+      </div>
+      <div class="stat-card glass-card fade-in-up delay-3">
+        <span class="stat-icon" style="--icon-color:#2563EB"><i class="fa-solid fa-server"></i></span>
+        <div class="stat-body">
+          <span class="stat-label">Web Server</span>
+          <span class="stat-value">Running</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Cards -->
+    <div class="main-grid">
+
+      <!-- Upload Card -->
+      <div class="glass-card panel-card fade-in-up">
+        <div class="panel-head">
+          <span class="panel-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+          <div>
+            <h2>Upload File via TCP</h2>
+            <p>Kirim file langsung ke TCP server Anda</p>
+          </div>
+        </div>
+
+        <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+          <label class="dropzone" id="dropzone" for="fileInput">
+            <input type="file" name="file" id="fileInput" required hidden>
+            <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+            <p class="dropzone-title">Drag &amp; drop file di sini</p>
+            <p class="dropzone-sub">atau klik untuk memilih file</p>
+          </label>
+
+          <div class="file-preview" id="filePreview" hidden>
+            <i class="fa-solid fa-file file-preview-icon"></i>
+            <div class="file-preview-info">
+              <span class="file-preview-name" id="fileName">filename.ext</span>
+              <span class="file-preview-size" id="fileSize">0 KB</span>
+            </div>
+            <button type="button" class="file-remove" id="fileRemove" aria-label="Hapus file">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="progress-track" id="progressTrack" hidden>
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block ripple" id="uploadBtn">
+            <i class="fa-solid fa-upload"></i>
+            <span>Upload via TCP</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Streaming Card -->
+      <!-- Streaming Card (Diperbarui untuk VOD) -->
+      <div class="glass-card panel-card fade-in-up delay-1">
+        <div class="panel-head">
+          <span class="panel-icon secondary"><i class="fa-solid fa-film"></i></span>
+          <div>
+            <h2>Video Library</h2>
+            <p>Streaming VoD via UDP Protocol</p>
+          </div>
+        </div>
+
+        <!-- HTML5 Video Player -->
+        <div class="video-frame" style="aspect-ratio: 16/9; background: #000; border-radius: var(--radius-md); overflow: hidden; position: relative;">
+          <video id="mainPlayer" controls style="width: 100%; height: 100%; object-fit: cover;">
+            <source src="" type="video/mp4" id="videoSource">
+            Browser Anda tidak mendukung HTML5 video.
+          </video>
+        </div>
+
+        <!-- Daftar Video dari Database -->
+        <div class="video-list" style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px;">
+          <h3 style="font-size: 14px; color: var(--text-dim); margin-bottom: 4px;">Daftar Video Tersedia:</h3>
+          
+          {% if videos %}
+            {% for vid in videos %}
+            <!-- Item Video (Bisa Diklik) -->
+            <div class="file-preview" style="cursor: pointer; transition: all 0.2s ease;" onclick="playVideo('{{ vid.id }}')" onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor='var(--border-soft)'">
+              <i class="fa-solid fa-play file-preview-icon" style="background: var(--gradient-accent);"></i>
+              <div class="file-preview-info">
+                <span class="file-preview-name">{{ vid.title }}</span>
+                <span class="file-preview-size">{{ (vid.size / 1024 / 1024)|round(2) }} MB • {{ vid.uploaded_at.strftime('%d %b %Y') }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <!-- Pesan jika belum ada video -->
+            <div style="text-align: center; padding: 32px 0; border: 1px dashed var(--border); border-radius: 12px;">
+              <i class="fa-solid fa-folder-open" style="font-size: 24px; color: var(--text-faint); margin-bottom: 8px;"></i>
+              <p style="font-size: 13px; color: var(--text-dim);">Belum ada video. Silakan upload via TCP.</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Script untuk memutar video saat diklik -->
+        <script>
+          function playVideo(videoId) {
+            const player = document.getElementById('mainPlayer');
+            player.src = "/video/" + videoId;
+            player.play();
+            
+            // Opsional: Tampilkan toast notification bawaan Anda
+            if(typeof showToast === 'function') {
+               showToast("Memulai stream video via UDP...", "info", 3000);
+            }
+          }
+        </script>
+      </div>
+
+    </div>
+  </section>
+  {% endif %}
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="footer-brand"><i class="fa-solid fa-diagram-project"></i> Socket Web Platform</span>
+    <span class="footer-tag">Built using Flask • TCP Socket • UDP Socket • OpenCV • Python</span>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

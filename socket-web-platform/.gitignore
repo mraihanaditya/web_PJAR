@@ -1,0 +1,15 @@
+# --- Kredensial dan Rahasia ---
+.env
+
+# --- Virtual Environment ---
+venv/
+env/
+.venv/
+
+# --- File Bawaan Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- File Upload ---
+uploaded_files/
