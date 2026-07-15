@@ -91,7 +91,7 @@ Contoh menggunakan **SCP** dari Windows (PowerShell): (sesuaikan dengan struktur
 
 ## 3. Menjalankan Server
 
-Jalankan kedua server (TCP dan UDP) secara bersamaan menggunakan:
+Jalankan kedua server (TCP dan UDP) secara bersamaan di dalam folder socket-server menggunakan:
 
 ```bash
 python3 run.py
